@@ -1,4 +1,4 @@
-import { LOAD_ROLES } from './constants.js';
+import { LOAD_ROLES, SCORING_ROLES } from './constants.js';
 import {
   getAction,
   eventId,
@@ -129,4 +129,126 @@ export function settleRound(team, round) {
   };
   team.settlement[round] = detail;
   return detail;
+}
+
+export function computeScores(team, upto = 2) {
+  if (!team.settlement.r1) return null;
+  const rounds = upto === 1 ? ['r1'] : ['r1', 'r2'];
+  const detail = (round) => team.settlement[round];
+  const did = (roleId, id) => rounds.some((round) => {
+    const record = team.actions[round][roleId];
+    return record && !record.passed && record.actionIds.includes(id);
+  });
+
+  const subsidy = did('NDRC', 'ndrc_subsidy');
+  const capacityPrice = did('NDRC', 'ndrc_capacity_price');
+  const coldWave = rounds.includes('r2') && eventId(team, 'r2') === 'cold_wave';
+
+  const generation = rounds.reduce((sum, round) => sum + (detail(round)?.power ?? 0), 0)
+    + (subsidy ? 4 : 0)
+    + (coldWave ? -3 : 0);
+  const grid = (did('GRID', 'grid_expand') ? 4 : 0)
+    + (did('GRID', 'storage_plant') ? 4 : 0)
+    + (did('GRID', 'flex_dispatch') ? 3 : 0)
+    + (subsidy ? 4 : 0);
+  const evConsumed = rounds.reduce(
+    (sum, round) => sum + (detail(round)?.actualByRole.EV ?? 0),
+    0,
+  );
+  let v2gBonus = 0;
+  for (const round of rounds) {
+    if (!did('EV', 'ev_v2g')) continue;
+    const dice = team.dice[round]?.EV;
+    if (dice) v2gBonus += dice.success ? 4 : 1;
+  }
+  const r2Ev = team.actions.r2.EV;
+  const superChargerBonus = (team.actions.r1.EV?.actionIds ?? []).includes('ev_super_charger')
+    && r2Ev && !r2Ev.passed && r2Ev.actionIds.includes('ev_mass_produce') ? 2 : 0;
+  const ev = evConsumed + v2gBonus + superChargerBonus - (capacityPrice ? 2 : 0);
+  const building = rounds.reduce(
+    (sum, round) => sum + (detail(round)?.actualByRole.BUILDING ?? 0),
+    0,
+  ) - (capacityPrice ? 2 : 0);
+  const material = Math.floor(
+    rounds.reduce((sum, round) => sum + (detail(round)?.materialSavings ?? 0), 0) / 5,
+  );
+  const otherScores = generation + grid + ev + building + material;
+  const ndrc = Math.floor(otherScores / 4)
+    + (rounds.includes('r2') ? Math.floor((detail('r2')?.fundsEnd ?? 0) / 10) : 0);
+  const individual = {
+    GENERATION: generation,
+    GRID: grid,
+    EV: ev,
+    BUILDING: building,
+    MATERIAL: material,
+    NDRC: ndrc,
+    ACTUARY: ndrc,
+  };
+  if (upto === 1) return { individual };
+
+  const storedTotal = rounds.reduce((sum, round) => sum + (detail(round)?.stored ?? 0), 0);
+  const penaltyTotal = rounds.reduce((sum, round) => sum + (detail(round)?.penalty ?? 0), 0);
+  const extra = [];
+  if (team.flags.didGreening) extra.push({ reason: '全域立体绿化', points: 5 });
+  if (detail('r1').penalty === 0 && detail('r2').penalty === 0) {
+    extra.push({ reason: '两轮零弃电罚分', points: 5 });
+  }
+  if (eventId(team, 'r2') === 'cold_wave' && team.flags.builtStoragePlant) {
+    extra.push({
+      reason: '寒潮中保有储能电站',
+      points: eventOf(team, 'r2').storagePlantBonus,
+    });
+  }
+  if (eventId(team, 'r2') === 'price_surge') {
+    extra.push({
+      reason: '现货暴涨·首轮储能增值',
+      points: (detail('r1')?.stored ?? 0) * eventOf(team, 'r2').carriedStorageScore,
+    });
+  }
+  if (eventId(team, 'r2') === 'pioneer_cert' && team.flags.usedInvestment
+    && [detail('r1'), detail('r2')].every((item) => item.power - item.actual <= 2)) {
+    extra.push({
+      reason: '零碳城市先锋认证',
+      points: eventOf(team, 'r2').pioneerBonus,
+    });
+  }
+
+  const extraTotal = extra.reduce((sum, item) => sum + item.points, 0);
+  const sum6 = SCORING_ROLES.reduce((sum, role) => sum + individual[role], 0);
+  const teamTotal = sum6 + storedTotal - penaltyTotal + extraTotal;
+  return {
+    individual,
+    storedTotal,
+    penaltyTotal,
+    extra,
+    extraTotal,
+    sum6,
+    teamTotal,
+  };
+}
+
+export function interimScore(team) {
+  const scores = computeScores(team, 1);
+  if (!scores) return null;
+  const sum6 = SCORING_ROLES.reduce((sum, role) => sum + scores.individual[role], 0);
+  return sum6
+    + (team.settlement.r1?.stored ?? 0)
+    - (team.settlement.r1?.penalty ?? 0);
+}
+
+export function rankTeams(teams) {
+  return teams.map((team) => {
+    const scores = computeScores(team);
+    const total = team.settlement.teamTotal ?? scores?.teamTotal ?? 0;
+    const individualSum = SCORING_ROLES.reduce(
+      (sum, role) => sum + (team.settlement.individual[role] ?? scores?.individual[role] ?? 0),
+      0,
+    );
+    return {
+      teamId: team.id,
+      name: team.name,
+      total,
+      module: total - individualSum,
+    };
+  }).sort((a, b) => b.total - a.total || b.module - a.module);
 }
