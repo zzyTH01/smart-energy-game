@@ -1,0 +1,8 @@
+[
+  { "id": "storage_master", "name": "储能达人", "desc": "累计总储能容量≥6，且储能吸收量≥2" },
+  { "id": "load_pioneer", "name": "负荷先锋", "desc": "两轮实际消耗合计≥15" },
+  { "id": "wind_chaser", "name": "追风者", "desc": "选择了深远海风电，且两轮实际消耗合计≥10" },
+  { "id": "windfree_city", "name": "无风之城", "desc": "全程未选深远海风电，两轮总绿电≥10且弃电量为0" },
+  { "id": "garden_city", "name": "花园城市", "desc": "执行了地标级零碳综合体，且每轮弃电量均≤2" },
+  { "id": "funds_steward", "name": "资金管家", "desc": "第2轮结余资金≥70" }
+]

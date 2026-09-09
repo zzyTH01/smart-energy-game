@@ -1,0 +1,7 @@
+{
+  "port": 3000,
+  "planningMinutes": 15,
+  "warnMinutes": [5, 1],
+  "teamCountMin": 2,
+  "teamCountMax": 8
+}

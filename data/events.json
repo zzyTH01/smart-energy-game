@@ -1,0 +1,12 @@
+{
+  "r1": [
+    { "id": "green_bond", "name": "专项绿色国债", "desc": "全队初始资金提升至125", "fundsBase": 125 },
+    { "id": "research_breakthrough", "name": "产学研大突破", "desc": "材料本轮研发免费，且可同时执行2项研发", "materialFree": true, "dualResearch": true },
+    { "id": "green_consumption", "name": "绿色消费潮", "desc": "本轮汽车与建筑项目成本各减免10", "eventDiscount": 10, "eventDiscountRoles": ["EV", "BUILDING"] }
+  ],
+  "r2": [
+    { "id": "cold_wave", "name": "极寒无风寒潮", "desc": "光伏-3（无光伏则风电-3），核电免疫；发电个人分-3；有储能电站额外+5", "coldWave": true, "storagePlantBonus": 5 },
+    { "id": "price_surge", "name": "现货电价暴涨", "desc": "第1轮储能电量每点+2分；本轮弃电罚分每点扣4", "penaltyMultiplier": 4, "carriedStorageScore": 2 },
+    { "id": "pioneer_cert", "name": "零碳城市先锋认证", "desc": "两轮发电产出-实际消耗均≤2且实施过绿色招商引资，全队+8", "pioneerBonus": 8 }
+  ]
+}

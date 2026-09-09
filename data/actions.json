@@ -1,0 +1,22 @@
+[
+  { "id": "solar_pv", "role": "GENERATION", "name": "集中式光伏", "desc": "稳定产出8点绿电", "cost": { "funds": 25, "land": 2 }, "power": 8, "scoreFlat": 8 },
+  { "id": "offshore_wind", "role": "GENERATION", "name": "深远海风电", "desc": "掷骰≥4产出15点，<4保底5点", "cost": { "funds": 35, "land": 3 }, "dice": { "threshold": 4, "success": { "power": 15, "score": 15 }, "fail": { "power": 5, "score": 5 } }, "flags": ["hasOffshoreWind"] },
+  { "id": "nuclear", "role": "GENERATION", "name": "先进核电站", "desc": "稳定产出10点绿电（免疫极端气候）", "cost": { "funds": 35, "land": 3 }, "power": 10, "scoreFlat": 10, "flags": ["isNuclear"] },
+  { "id": "grid_expand", "role": "GRID", "name": "扩建智能电网", "desc": "输配上限+4（永久）", "cost": { "funds": 20, "land": 1 }, "effects": [{ "type": "TRANS_CAP", "value": 4 }], "scoreFlat": 4 },
+  { "id": "storage_plant", "role": "GRID", "name": "建设储能电站", "desc": "储能容量+4（免疫寒潮，吸收弃电）", "cost": { "funds": 25, "land": 2 }, "effects": [{ "type": "STORAGE_CAP", "value": 4 }, { "type": "FLAG", "flag": "builtStoragePlant" }], "scoreFlat": 4 },
+  { "id": "flex_dispatch", "role": "GRID", "name": "柔性电网调度", "desc": "当轮输配上限+2；合法弃电额度+2", "cost": { "funds": 15, "land": 0 }, "effects": [{ "type": "FLEX_DISPATCH" }], "scoreFlat": 3 },
+  { "id": "ev_mass_produce", "role": "EV", "name": "批量生产电动车", "desc": "当轮消耗绿电5点", "cost": { "funds": 25, "land": 0 }, "consume": 5, "score": "CONSUME", "flags": ["evMassProduce"] },
+  { "id": "ev_charging_expand", "role": "EV", "name": "扩建快充网络", "desc": "当轮消耗绿电3点", "cost": { "funds": 15, "land": 1 }, "consume": 3, "score": "CONSUME" },
+  { "id": "ev_v2g", "role": "EV", "name": "车网互动V2G研发", "desc": "消耗2点；掷骰≥3储能+2，<3储能+1", "cost": { "funds": 15, "land": 0 }, "consume": 2, "score": "CONSUME", "dice": { "threshold": 3, "success": { "storageCap": 2, "scoreBonus": 4 }, "fail": { "storageCap": 1, "scoreBonus": 1 } } },
+  { "id": "ev_super_charger", "role": "EV", "name": "新建超级快充网络", "desc": "消耗7点；其后批量生产电动车+2分", "cost": { "funds": 40, "land": 3 }, "consume": 7, "score": "CONSUME", "flags": ["builtSuperCharger"] },
+  { "id": "bldg_zero_carbon", "role": "BUILDING", "name": "新建零碳楼宇", "desc": "当轮消耗绿电6点", "cost": { "funds": 20, "land": 2 }, "consume": 6, "score": "CONSUME" },
+  { "id": "bldg_retrofit", "role": "BUILDING", "name": "既有建筑节能改造", "desc": "消耗2点；返还全队5资金", "cost": { "funds": 20, "land": 0 }, "consume": 2, "score": "CONSUME", "effects": [{ "type": "TEAM_FUNDS_RETURN", "value": 5 }] },
+  { "id": "bldg_greening", "role": "BUILDING", "name": "全域立体绿化", "desc": "消耗4点；终局全队+5分", "cost": { "funds": 25, "land": 0 }, "consume": 4, "score": "CONSUME", "flags": ["didGreening"], "effects": [{ "type": "TEAM_BONUS_FINAL", "reason": "全域立体绿化", "value": 5 }] },
+  { "id": "bldg_landmark", "role": "BUILDING", "name": "地标级零碳综合体", "desc": "消耗7点；其后全域立体绿化资金-10", "cost": { "funds": 45, "land": 3 }, "consume": 7, "score": "CONSUME", "flags": ["builtLandmark"] },
+  { "id": "mat_pv_material", "role": "MATERIAL", "name": "钙钛矿光伏材料", "desc": "本轮及后续发电建造成本-10", "cost": { "funds": 10, "land": 0 }, "effects": [{ "type": "MATERIAL_DISCOUNT", "target": "GENERATION", "value": 10 }] },
+  { "id": "mat_green_material", "role": "MATERIAL", "name": "轻质绿色建材", "desc": "本轮及后续建筑建造成本-10", "cost": { "funds": 10, "land": 0 }, "effects": [{ "type": "MATERIAL_DISCOUNT", "target": "BUILDING", "value": 10 }] },
+  { "id": "mat_chain_reduce", "role": "MATERIAL", "name": "全链降本工艺", "desc": "本轮全队行动成本各减5", "cost": { "funds": 10, "land": 0 }, "effects": [{ "type": "CHAIN_REDUCE", "value": 5 }] },
+  { "id": "ndrc_subsidy", "role": "NDRC", "name": "绿电补贴政策", "desc": "发电、电网各+4分", "cost": { "funds": 20, "land": 0 }, "effects": [{ "type": "SCORE_BUFF", "targets": ["GENERATION", "GRID"], "value": 4 }] },
+  { "id": "ndrc_capacity_price", "role": "NDRC", "name": "容量电价机制", "desc": "全队+25资金；汽车、建筑各-2分", "cost": { "funds": 0, "land": 0 }, "effects": [{ "type": "TEAM_FUNDS", "value": 25 }, { "type": "SCORE_DEBUFF", "targets": ["EV", "BUILDING"], "value": 2 }] },
+  { "id": "ndrc_investment", "role": "NDRC", "name": "绿色招商引资", "desc": "全队+30资金（当轮）", "cost": { "funds": 0, "land": 2 }, "effects": [{ "type": "TEAM_FUNDS", "value": 30 }, { "type": "FLAG", "flag": "usedInvestment" }] }
+]
