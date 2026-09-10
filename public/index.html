@@ -1,3 +1,21 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><title>快乐能源</title></head>
-<body><main><h1>快乐能源</h1><p>客户端开发中。</p></main></body></html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>快乐能源 · 加入</title>
+  <link rel="stylesheet" href="/common.css">
+</head>
+<body>
+  <main class="card" style="max-width:420px;margin:38px auto">
+    <h1>快乐能源</h1>
+    <p class="muted">自强城能源规划竞赛 · 玩家加入</p>
+    <input id="code" inputmode="numeric" maxlength="4" placeholder="4位房间码" autocomplete="off">
+    <input id="name" maxlength="12" placeholder="你的昵称" autocomplete="off">
+    <button id="joinBtn">加入游戏</button>
+    <a class="muted" href="/host/">我是主持人</a>
+  </main>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" src="/join.js"></script>
+</body>
+</html>

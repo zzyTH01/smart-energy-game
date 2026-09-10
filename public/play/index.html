@@ -1,3 +1,18 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><title>玩家端</title></head>
-<body><main><h1>玩家端</h1><p>开发中。</p></main></body></html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>快乐能源 · 玩家</title>
+  <link rel="stylesheet" href="/common.css">
+</head>
+<body>
+  <div class="topbar">
+    <div id="meTitle">连接中</div>
+    <div class="timer" id="timer">--:--</div>
+  </div>
+  <main id="app"></main>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" src="/play/play.js"></script>
+</body>
+</html>

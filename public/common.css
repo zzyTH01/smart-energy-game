@@ -1,0 +1,128 @@
+:root {
+  --bg: #f3f6f2;
+  --card: #ffffff;
+  --ink: #182720;
+  --muted: #66786d;
+  --green: #1d9e57;
+  --green-dark: #136539;
+  --amber: #b76e00;
+  --red: #c53b31;
+  --line: #d8e2d9;
+  --big-bg: #10221a;
+  --big-card: #173425;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+button, input { font: inherit; }
+button {
+  border: 0;
+  border-radius: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 16px;
+  margin: 5px 0;
+  background: var(--green);
+  color: #fff;
+  font-weight: 600;
+}
+button:disabled { background: #b8c6bc; color: #f5f8f5; }
+button.ghost {
+  background: transparent;
+  color: var(--green-dark);
+  border: 1px solid var(--green);
+}
+button.danger { background: var(--red); }
+button.compact { width: auto; min-height: 38px; padding: 8px 13px; }
+.card {
+  margin: 10px;
+  padding: 13px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.card.selected { border-color: var(--green); box-shadow: 0 0 0 2px var(--green) inset; }
+.badge {
+  display: inline-block;
+  margin: 2px 6px 2px 0;
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 12px;
+  background: #e5f1e8;
+  color: var(--green-dark);
+}
+.badge.red { background: #fae5e3; color: var(--red); }
+.badge.amber { background: #fff0d4; color: var(--amber); }
+.muted { color: var(--muted); font-size: 13px; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 10px 14px;
+  background: var(--green-dark);
+  color: #fff;
+}
+.timer { min-width: 64px; text-align: right; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.timer.warn { color: #ffd479; }
+input {
+  width: 100%;
+  margin: 6px 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; font-size: 14px; }
+th { white-space: nowrap; }
+.action {
+  width: 100%;
+  margin: 9px 0;
+  padding: 11px;
+  text-align: left;
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.action.selected { border-color: var(--green); box-shadow: 0 0 0 2px var(--green) inset; }
+.action.disabled { opacity: .62; }
+.action b { display: block; font-size: 16px; }
+.action small { display: block; margin-top: 3px; color: var(--muted); }
+.action .reason { margin-top: 5px; color: var(--red); font-size: 12px; }
+.dice { font-size: 36px; font-weight: 800; }
+.dice.rolling { display: inline-block; animation: shake .5s infinite; }
+@keyframes shake { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-14deg); } 75% { transform: rotate(14deg); } }
+.qr { display: block; background: #fff; border-radius: 8px; padding: 7px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; padding: 0 10px; }
+.steps div { padding: 4px 0; border-bottom: 1px dashed #37543f; }
+
+body.big { background: var(--big-bg); color: #eaf4ec; }
+body.big .card { background: var(--big-card); border-color: #285239; }
+body.big .muted { color: #a4c0ad; }
+body.big table th, body.big table td { border-color: #315a42; }
+body.big .action { background: transparent; color: #eaf4ec; border-color: #315a42; }
+body.big .badge { background: #245239; color: #9de4b9; }
+body.big button { background: #2dbe6c; }
+body.big button.ghost { background: transparent; color: #83dfa7; border-color: #2dbe6c; }
+body.big .podium { display: flex; align-items: flex-end; justify-content: center; gap: 18px; padding: 34px 12px; }
+body.big .podium .bar {
+  width: 132px;
+  border-radius: 8px 8px 0 0;
+  padding-top: 12px;
+  background: linear-gradient(#2dbe6c, #136539);
+  color: #fff;
+  font-size: 30px;
+  font-weight: 800;
+  text-align: center;
+}

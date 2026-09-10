@@ -77,14 +77,10 @@ function visibleTeam(room, team, viewer) {
         connected: player.connected,
       })),
     eventCard: round ? team.eventCards[round] : null,
-    goalKeptShown: settled || mine
-      ? team.goalKept
-      : (team.goalKept ? true : null),
+    goalKept: team.goalKept ?? null,
+    goalKeptShown: team.goalKept ?? null,
+    goalCards: [...(team.goalCards ?? [])],
   };
-
-  if (mine && room.phase === 'GOAL_PICK' && myPlayer.roleId === 'MAYOR') {
-    base.goalCards = team.goalCards;
-  }
 
   if (mine && isPlanning(room.phase)) {
     const selection = listSelection(team, round);
