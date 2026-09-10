@@ -110,9 +110,17 @@ const nextLabel = () => ({
 function lobbyView() {
   const url = location.origin;
   const filled = (team) => STANDARD.filter((role) => team.members.some((member) => member.roleId === role)).length;
+  const assigned = (team) => team.members.length;
   return `<div class="card row"><div><small>玩家访问</small><h1>${url}</h1><p>房间码 <b style="font-size:38px">${state.code}</b></p></div>
     <img class="qr" src="/qr.svg?d=${encodeURIComponent(url)}" width="180" height="180" alt="加入二维码"></div>
-    <div class="card"><b>队伍 · 角色</b>${state.teams.map((team) => `<p><b>${team.name}（${filled(team)}/7）</b><br>
+    <div class="card"><div class="row"><b>队伍 · 角色</b>
+      <button class="compact ghost" id="addTeamBtn" ${state.teams.length >= 8 ? 'disabled' : ''}>添加队伍</button>
+      <span class="muted">${state.teams.length}/8 队</span></div>
+      ${state.teams.map((team) => `<p><b>${team.name}</b>
+        <span class="badge">已分配 ${assigned(team)}/8</span>
+        <span class="badge ${filled(team) === 7 ? '' : 'amber'}">标准角色 ${filled(team)}/7</span>
+        <button class="compact danger" data-remove-team="${team.id}"
+          ${state.teams.length <= 2 || assigned(team) > 0 ? 'disabled' : ''}>移除</button><br>
       ${team.members.map((member) => `${ROLES[member.roleId] ?? '未分配'}·${member.name}`).join('　') || '暂无人'}</p>`).join('')}
       <div class="row"><button class="compact" id="startBtn">开始游戏</button>
       <button class="compact ghost" id="forceStartBtn">缺员强制开始</button></div></div>`;
@@ -171,6 +179,14 @@ function render() {
 }
 
 function bind() {
+  document.getElementById('addTeamBtn')?.addEventListener('click', async () => {
+    const result = await emit('team:add');
+    if (!result.ok) alert(result.reason);
+  });
+  document.querySelectorAll('[data-remove-team]').forEach((button) => button.addEventListener('click', async () => {
+    const result = await emit('team:remove', { teamId: button.dataset.removeTeam });
+    if (!result.ok) alert(result.reason);
+  }));
   document.getElementById('startBtn')?.addEventListener('click', async () => {
     const result = await emit('game:start');
     if (!result.ok) alert(result.reason);

@@ -3,6 +3,8 @@ export const C2S = [
   'room:join',
   'room:resume',
   'team:assign',
+  'team:add',
+  'team:remove',
   'game:start',
   'goal:pick',
   'action:select',

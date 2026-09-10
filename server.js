@@ -265,6 +265,18 @@ export function wire(io) {
       ack,
     )));
 
+    socket.on('team:add', hostOnly((room, _, ack) => done(
+      room,
+      roomsModule.addTeam(room),
+      ack,
+    )));
+
+    socket.on('team:remove', hostOnly((room, payload, ack) => done(
+      room,
+      roomsModule.removeTeam(room, payload.teamId),
+      ack,
+    )));
+
     socket.on('game:start', hostOnly((room, payload, ack) => {
       const result = state.startGame(room, {
         force: payload.force,

@@ -9,6 +9,8 @@ import {
   assign,
   teamComplete,
   audit,
+  addTeam,
+  removeTeam,
 } from '../src/game/rooms.js';
 import { saveSnapshot, loadSnapshot, exportResult } from '../src/persistence.js';
 import { STANDARD_ROLES } from '../src/game/constants.js';
@@ -53,6 +55,45 @@ test('审计记录追加留痕', () => {
   audit(room.teams[0], '测试留痕');
   assert.equal(room.teams[0].audit.length, 1);
   assert.equal(room.teams[0].audit[0].msg, '测试留痕');
+});
+
+test('大厅可增加空队伍，上限8队并保持编号连续', () => {
+  const room = createRoom('主持人', 7);
+  const result = addTeam(room);
+  assert.equal(result.ok, true);
+  assert.equal(room.teams.length, 8);
+  assert.deepEqual(room.teams.map((team) => team.id), [
+    't1', 't2', 't3', 't4', 't5', 't6', 't7', 't8',
+  ]);
+  assert.deepEqual(room.teams.map((team) => team.name), [
+    '第1队', '第2队', '第3队', '第4队', '第5队', '第6队', '第7队', '第8队',
+  ]);
+  assert.equal(addTeam(room).ok, false);
+});
+
+test('大厅可移除空队伍，最少2队且编号重新连续', () => {
+  const room = createRoom('主持人', 3);
+  const player = joinRoom(room, '小明');
+  assign(room, player.token, 't2', 'MAYOR');
+
+  assert.equal(removeTeam(room, 't2').ok, false);
+  assert.equal(room.teams.length, 3);
+  assert.equal(removeTeam(room, 't3').ok, true);
+  assert.equal(room.teams.length, 2);
+  assert.deepEqual(room.teams.map((team) => team.id), ['t1', 't2']);
+  assert.equal(player.teamId, 't2');
+  assert.equal(room.teams[1].name, '第2队');
+
+  assert.equal(removeTeam(room, 't2').ok, false);
+  assert.equal(room.teams.length, 2);
+});
+
+test('队伍数量只能在开赛前调整', () => {
+  const room = createRoom('主持人', 2);
+  room.phase = 'R1_PLAN';
+  assert.equal(addTeam(room).ok, false);
+  assert.equal(removeTeam(room, 't2').ok, false);
+  assert.equal(room.teams.length, 2);
 });
 
 test('快照保存与恢复保持字段一致', () => {

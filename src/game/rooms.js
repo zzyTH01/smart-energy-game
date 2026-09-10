@@ -73,6 +73,40 @@ export function teamComplete(room, team) {
   ));
 }
 
+function renumberTeams(room) {
+  const oldIds = new Map(room.teams.map((team, index) => [
+    team.id,
+    `t${index + 1}`,
+  ]));
+  room.teams.forEach((team, index) => {
+    team.id = `t${index + 1}`;
+    team.name = `第${index + 1}队`;
+  });
+  for (const player of room.players) {
+    player.teamId = oldIds.get(player.teamId) ?? null;
+  }
+}
+
+export function addTeam(room) {
+  if (room.phase !== 'LOBBY') return { ok: false, reason: '已开赛，无法调整队伍' };
+  if (room.teams.length >= 8) return { ok: false, reason: '最多支持8支队伍' };
+  room.teams.push(createTeam(`t${room.teams.length + 1}`, `第${room.teams.length + 1}队`));
+  renumberTeams(room);
+  return { ok: true };
+}
+
+export function removeTeam(room, teamId) {
+  if (room.phase !== 'LOBBY') return { ok: false, reason: '已开赛，无法调整队伍' };
+  if (room.teams.length <= 2) return { ok: false, reason: '至少需要保留2支队伍' };
+  const teamIndex = room.teams.findIndex((team) => team.id === teamId);
+  if (teamIndex === -1) return { ok: false, reason: '队伍不存在' };
+  const hasMember = room.players.some((player) => player.teamId === teamId);
+  if (hasMember) return { ok: false, reason: '队伍已有成员，不能移除' };
+  room.teams.splice(teamIndex, 1);
+  renumberTeams(room);
+  return { ok: true };
+}
+
 export function audit(team, message) {
   team.audit.push({ ts: Date.now(), msg: message });
 }
