@@ -143,19 +143,18 @@ export const forcePass = (team, round, roleId) => passAction(team, round, roleId
 
 export function finalValidate(team, round) {
   const violations = [];
-  const lockedSelection = {};
+  const activeSelection = {};
 
   for (const [roleId, record] of Object.entries(team.actions[round] ?? {})) {
     if (record?.passed || !record?.actionIds?.length) continue;
     if (!record.locked) {
       violations.push({ roleId, reason: '行动未锁定' });
-      continue;
     }
-    lockedSelection[roleId] = record.actionIds;
+    activeSelection[roleId] = record.actionIds;
   }
 
-  const cost = costBreakdown(team, round, lockedSelection);
-  const endFunds = availableFunds(team, round, lockedSelection);
+  const cost = costBreakdown(team, round, activeSelection);
+  const endFunds = availableFunds(team, round, activeSelection);
   const floor = fundsFloor(team, round);
   if (endFunds < floor) {
     violations.push({
@@ -173,8 +172,8 @@ export function finalValidate(team, round) {
     });
   }
 
-  const transCap = effectiveTransCap(team, round, lockedSelection);
-  for (const [roleId, ids] of Object.entries(lockedSelection)) {
+  const transCap = effectiveTransCap(team, round, activeSelection);
+  for (const [roleId, ids] of Object.entries(activeSelection)) {
     for (const id of ids) {
       const action = getAction(id);
       const need = action.consume ?? 0;

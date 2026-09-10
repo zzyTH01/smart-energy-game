@@ -6,6 +6,7 @@ const rooms = new Map();
 
 export const getRoom = (code) => rooms.get(code) ?? null;
 export const allRooms = () => [...rooms.values()];
+export const registerRoom = (room) => rooms.set(room.code, room);
 
 const makeToken = () => randomInt(0, 1e12).toString(36)
   + randomInt(0, 1e12).toString(36);
